@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Types & Interfaces
-import { IQuestions } from '../types';
+import { IQuestion } from '../types';
 
 // MUI & Styling
 import { Typography, Button } from '@mui/material';
@@ -16,29 +16,27 @@ const useStyles = makeStyles({
 });
 
 interface IProps {
-  questions: IQuestions[];
+  question: IQuestion;
 }
 
 const QuestionField: React.FC<IProps> = (props) => {
   const classes = useStyles();
-  const questions = props.questions;
-  console.log(props);
+  const question = props.question;
+  console.log(question);
   return (
     <div className={classes.mainContainer}>
-      <Typography variant="h6">Question Title</Typography>
+      <Typography variant="h6">{question.question}</Typography>
       <br />
-      <Button variant="outlined" color="error" sx={{ mt: '1rem' }}>
-        Answer 1
-      </Button>
-      <Button variant="outlined" color="error" sx={{ mt: '1rem' }}>
-        Answer 2
-      </Button>
-      <Button variant="outlined" color="error" sx={{ mt: '1rem' }}>
-        Answer 3
-      </Button>
-      <Button variant="outlined" color="error" sx={{ mt: '1rem' }}>
-        Answer 4
-      </Button>
+      {question.answers.map((answer) => (
+        <Button
+          variant="outlined"
+          color="error"
+          sx={{ mt: '1rem' }}
+          key={answer}
+        >
+          {answer}
+        </Button>
+      ))}
     </div>
   );
 };

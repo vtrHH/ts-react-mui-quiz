@@ -5,7 +5,7 @@ import { getQuizQuestions } from './API';
 import QuestionField from './components/QuestionField';
 
 // Interfaces & Types
-import { IQuestions } from './types';
+import { IQuestion } from './types';
 
 // MUI & Styling
 import { Typography, Button } from '@mui/material';
@@ -31,19 +31,32 @@ const useStyles = makeStyles({
   }
 });
 
+const TOTAL_QUESTIONS = 10;
+
 const App: React.FC = () => {
   const classes = useStyles();
-  const [questions, setQuestions] = useState<IQuestions[]>([]);
+  const [questions, setQuestions] = useState<IQuestion[]>([]);
   const [started, setStarted] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState(0);
+  const [number, setNumber] = useState(0);
 
   const startGame = async () => {
     const newQuestions = await getQuizQuestions();
     setQuestions(newQuestions);
     setStarted(true);
+    setScore(0);
+    setNumber(0);
+    setGameOver(false);
   };
 
   const nextQuestion = () => {
     console.log('Button next question clicked');
+    const nextQuestion = number + 1;
+    if (nextQuestion === TOTAL_QUESTIONS) {
+      setGameOver(true);
+    }
+    setNumber(nextQuestion);
   };
 
   return (
@@ -52,13 +65,13 @@ const App: React.FC = () => {
         <Typography variant="h4" color="error">
           Verena's Open Trivia Quiz
         </Typography>
-        {started ? (
+        {started && !gameOver ? (
           <>
             <Typography variant="h6" sx={{ mt: '2rem' }}>
-              Your Score:
+              Your Score: {score}
             </Typography>
             <div className={classes.gameContainer}>
-              <QuestionField questions={questions} />
+              <QuestionField question={questions[number]} />
               <Button
                 onClick={nextQuestion}
                 variant="contained"
@@ -69,12 +82,30 @@ const App: React.FC = () => {
               </Button>
             </div>
           </>
+        ) : gameOver ? (
+          <>
+            <Typography variant="h5" sx={{ mt: '2rem' }}>
+              All questions have been answered! Your final Score is:{' '}
+            </Typography>
+            <br />
+            <Typography variant="h6">
+              In for another round? Click the button below to get started again.
+            </Typography>
+            <Button
+              onClick={startGame}
+              variant="contained"
+              color="error"
+              sx={{ mt: '2rem' }}
+            >
+              Start again
+            </Button>
+          </>
         ) : (
           <div className={classes.startContainer}>
             <Typography variant="h5">Welcome :)</Typography>
             <br />
             <Typography variant="h6">
-              Blick the button below to get started
+              Click the button below to get started
             </Typography>
             <Button
               onClick={startGame}
